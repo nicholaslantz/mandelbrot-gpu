@@ -42,11 +42,13 @@
   (let ((a (s~ z :x)) (b (s~ z :y)))
     (+ (v! (- (* a a) (* b b)) (* 2 a b)) c)))
 
-(defun-g get-color ((i :int))
-  (v! (/ (+ 1 (cos (* (float i) 1 .01227))) 2)
-      (/ (+ 1 (cos (* (float i) 3 .01227))) 2)
-      (/ (+ 1 (cos (* (float i) 5 .01227))) 2)
-      1.0))
+(defun-g get-color ((i :int) (m :int))
+  (let ((c (expt (/ (float m) +pi+) -1))
+	(fi (float i)))
+    (v! (* 0.5 (+ 1 (cos (* fi 1 c))))
+	(* 0.5 (+ 1 (cos (* fi 3 c))))
+	(* 0.5 (+ 1 (cos (* fi 5 c))))
+	1.0)))
 
 (defun-g mandelbrot-check ((uv :vec2))
   (let ((tmp (v! 0 0))
@@ -55,7 +57,7 @@
       (cond ((> (length tmp) 2.0) (setf val i) (break))
 	    ((= i (1- 256)) (setf val i) (break))
 	    (t (setf tmp (mandelbrot-iter tmp uv)))))
-    (get-color val)))
+    (get-color val 256)))
 
 (defun-g frag-mb ((uv :vec2))
   (mandelbrot-check uv))
